@@ -1,6 +1,7 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import datetime
+from utilis import generate_short_code
 
 app = Flask(__name__)
 
@@ -23,6 +24,21 @@ class URLMap(db.Model):
     def __repr__(self):
         return f'<URLMap {self.short_code} -> {self.long_url[:30]}'
 
+
+@app.route('/api/shorten', methods=['POST'])
+def shorten_url():
+    data = request.get_json()
+    long_url = data.get('long_url')
+
+    if not long_url:
+        return jsonify({'error' : 'The "long_url" field is required'}), 400
+    
+    short_code = generate_short_code()
+
+    while URLMap.query.filter_by(short_code=short_code).first():
+        short_code = generate_short_code()
+        
+
 @app.route('/')
 def hello_world():
     return "Hello, World!"
@@ -34,5 +50,5 @@ def about():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        
+
     app.run(debug=True)

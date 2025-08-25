@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask import redirect, abort
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 from utilis import generate_short_code
@@ -8,6 +9,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///urls.db'
 
 db = SQLAlchemy(app)
+
 
 class URLMap(db.Model):
 
@@ -37,7 +39,29 @@ def shorten_url():
 
     while URLMap.query.filter_by(short_code=short_code).first():
         short_code = generate_short_code()
-        
+
+    new_url_mapping = URLMap(long_url=long_url, short_code=short_code)
+    db.session.add(new_url_mapping)
+    db.session.commit()
+
+    full_shorten_url = f'{request.host_url}{short_code}'
+
+    return jsonify({
+        'message' : 'URL shortened successfully.',
+        'short_url' : full_shorten_url,
+        'long_url' : long_url
+    }), 201
+
+@app.route('/<string:short_code>')
+def redirect_to_long_url(short_code):
+    url_map_entry = URLMap.query.filter_by(short_code = short_code).first()
+
+    if url_map_entry:
+        long_url = url_map_entry.long_url
+        return redirect(long_url)
+    else:
+        abort(404)
+
 
 @app.route('/')
 def hello_world():

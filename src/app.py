@@ -57,6 +57,8 @@ def redirect_to_long_url(short_code):
     url_map_entry = URLMap.query.filter_by(short_code = short_code).first()
 
     if url_map_entry:
+        url_map_entry.clicks += 1
+        db.session.commit()
         long_url = url_map_entry.long_url
         return redirect(long_url)
     else:

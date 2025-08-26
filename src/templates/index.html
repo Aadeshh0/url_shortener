@@ -25,6 +25,27 @@
         <button type="submit">Shorten</button>
     </form>
 
+    <script>
+        const shortenForm = document.getElementById('shorten-form');
+
+        shortenForm.addEventListener('submit', async (event) => {
+            event.preventDefault;
+            console.log('Form submitted!');
+
+            const urlInput = document.getElementById('long-url-input');
+            const longUrl = urlInput.value;
+
+            const response = await fetch('/api/shorten', {
+                method : 'POST',
+                headers : {
+                    'Content-Type' : 'application/json',
+                },
+                body : JSON.stringify({ long_url:longUrl }),
+            });
+
+            console.log('Received response from server: ', response)
+        });
+    </script>
     
 </body>
 </html>

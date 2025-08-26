@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from flask import redirect, abort
+from flask import redirect, abort, render_template
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 from utilis import generate_short_code
@@ -64,8 +64,8 @@ def redirect_to_long_url(short_code):
 
 
 @app.route('/')
-def hello_world():
-    return "Hello, World!"
+def index():
+    return render_template('index.html')
 
 @app.route('/about')
 def about():
@@ -74,5 +74,4 @@ def about():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-
     app.run(debug=True)

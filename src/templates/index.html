@@ -25,8 +25,12 @@
         <button type="submit">Shorten</button>
     </form>
 
+    <div id="result-container"></div>
+
     <script>
         const shortenForm = document.getElementById('shorten-form');
+        const resultContainer = document.getElementById('result-container');
+
 
         shortenForm.addEventListener('submit', async (event) => {
             event.preventDefault;
@@ -35,17 +39,36 @@
             const urlInput = document.getElementById('long-url-input');
             const longUrl = urlInput.value;
 
-            const response = await fetch('/api/shorten', {
-                method : 'POST',
-                headers : {
-                    'Content-Type' : 'application/json',
-                },
-                body : JSON.stringify({ long_url:longUrl }),
-            });
+            resultContainer.innerHTML = '';
 
-            console.log('Received response from server: ', response)
+            try{
+                const response = await fetch('/api/shorten', {
+                    method : 'POST',
+                    headers : {
+                        'Content-Type' : 'application/json',
+                    },
+                    body : JSON.stringify({ long_url:longUrl }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok){
+                    resultContainer.innerHTML = `
+                    <p>Success! Your short url is ready</p? 
+                        <a href = "${data.short_url}" target = "_blank">${data.short_url}</a>
+                        `;
+                } else {
+                    resultContainer.innerHTML = `<p style = "colour : red;">Error: ${data.error}</p>`;
+                    } 
+                }
+                catch (error) { 
+                    resultContainer.innerHTML = `<p style = "colour: red;">An unexpected error occured. Please try again.</p>`;
+                    console.error('Fetch error: ', error);
+                }
+                
+            // console.log('Received response from server: ', response)
         });
     </script>
-    
+
 </body>
 </html>

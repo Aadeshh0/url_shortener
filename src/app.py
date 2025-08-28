@@ -30,7 +30,8 @@ class URLMap(db.Model):
 @app.route('/api/shorten', methods=['POST'])
 def shorten_url():
     data = request.get_json()
-    long_url = data.get('long_url')
+
+    long_url = data.get['long_url']
 
     if not long_url:
         return jsonify({'error' : 'The "long_url" field is required'}), 400
@@ -64,10 +65,18 @@ def redirect_to_long_url(short_code):
     else:
         abort(404)
 
-
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/analytics/<string:short_code>')
+def show_analytics(short_code):
+    url_map_entry = URLMap.query.filter_by(short_code = short_code).first()
+
+    if url_map_entry:
+        return render_template('analytics.html', url_data = url_map_entry)
+    else:
+        abort(404)
 
 @app.route('/about')
 def about():

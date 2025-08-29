@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- The title will appear in the browser tab -->
+    <title>Link Analytics</title>
+    <!-- A little bit of inline style for clarity, you could move this to a CSS file later -->
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        .analytics-container { border: 1px solid #ccc; padding: 1em; border-radius: 5px; max-width: 800px; }
+        .data-point { margin-bottom: 1em; }
+        .data-point strong { display: block; margin-bottom: 0.25em; color: #333; }
+        .data-point code { background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+        .clicks-highlight { font-size: 2em; font-weight: bold; color: #007bff; }
+    </style>
+</head>
+<body>
+
+    <h1>Link Analytics</h1>
+
+    <!-- This container will hold all the details about the specific link. -->
+    <div class="analytics-container">
+        
+        <!-- Data Point: Original URL -->
+        <div class="data-point">
+            <strong>Original URL:</strong>
+            <!-- This is a Jinja2 template variable. Flask will replace this with
+                 the actual long URL from the database record we pass to the template. 
+                 The 'url_data' is a placeholder for the object we'll send from Python. -->
+            <code>{{ url_data.long_url }}</code>
+        </div>
+        
+        <!-- Data Point: Short URL -->
+        <div class="data-point">
+            <strong>Short URL:</strong>
+            <!-- We will construct the full short URL to display it here. -->
+            <code>{{ request.host_url }}{{ url_data.short_code }}</code>
+        </div>
+        
+        <!-- Data Point: Total Clicks -->
+        <div class="data-point">
+            <strong>Total Clicks:</strong>
+            <!-- This will be replaced by the integer from the 'clicks' column. -->
+            <p class="clicks-highlight">{{ url_data.clicks }}</p>
+        </div>
+
+        <!-- Data Point: Date Created -->
+        <div class="data-point">
+            <strong>Created On:</strong>
+            <!-- We can even display the creation timestamp. -->
+            <p>{{ url_data.created_at.strftime('%Y-%m-%d %H:%M:%S') }} UTC</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

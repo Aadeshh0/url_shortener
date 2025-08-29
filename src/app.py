@@ -31,11 +31,23 @@ class URLMap(db.Model):
 def shorten_url():
     data = request.get_json()
 
-    long_url = data.get['long_url']
+    long_url = data.get['long_url'] 
+    # with () it will return a default value of None if no value is found, but for [] it will raise a `KeyError`
 
     if not long_url:
         return jsonify({'error' : 'The "long_url" field is required'}), 400
     
+    custom_alias = data.get('custom_alias')
+
+    if custom_alias:
+        if ' ' in custom_alias:
+            return jsonify({'error' : 'Custom alias contains spaces.'}), 400
+        if not custom_alias.isalnum():
+            return jsonify({'error' : 'Custom alias can only contains numbers and alphabets'}), 400
+        if not (4 <= len(custom_alias) <= 30):
+            return jsonify({'error' : 'Custom alias must only be between 4 and 30 character length'}), 400
+
+
     short_code = generate_short_code()
 
     while URLMap.query.filter_by(short_code=short_code).first():
@@ -45,11 +57,11 @@ def shorten_url():
     db.session.add(new_url_mapping)
     db.session.commit()
 
-    full_shorten_url = f'{request.host_url}{short_code}'
+    short_url = f'{request.host_url}{short_code}'
 
     return jsonify({
         'message' : 'URL shortened successfully.',
-        'short_url' : full_shorten_url,
+        'short_url' : short_url,
         'long_url' : long_url
     }), 201
 

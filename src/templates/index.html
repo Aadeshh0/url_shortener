@@ -10,7 +10,7 @@
     <h1>Python URL Shorterner</h1>
     <h3>A simple try at URL Shortening service. </h3>
 
-    <form id="shorten-rul-form">
+    <form id="shorten-url-form">
         <label for="long-url-input">Enter your url you want to shorten:</label>
         <br>
 
@@ -21,7 +21,18 @@
             placeholder="https:example.com/very-long-url"
             required
         >
+        <br><br>
+        
+        <label for="custom-alias-input">Enter a custom alias (optional) : </label>
+        <br>
+        <input
+            type="text"
+            id = "custom-alia-input"
+            name = "custom_alias"
+            placeholder = "e.g. - my-custom-alias"
+        >
 
+        <br><br>
         <button type="submit">Shorten</button>
     </form>
 
@@ -39,6 +50,9 @@
             const urlInput = document.getElementById('long-url-input');
             const longUrl = urlInput.value;
 
+            const aliasInput = document.getElementByID('custom-alias-input');
+            const customAlias = aliasInput.value;
+
             resultContainer.innerHTML = '';
 
             try{
@@ -47,21 +61,21 @@
                     headers : {
                         'Content-Type' : 'application/json',
                     },
-                    body : JSON.stringify({ long_url:longUrl }),
+                    body : JSON.stringify({ long_url:longUrl, custom_alias : customAlias }),
                 });
 
                 const data = await response.json();
 
                 if (response.ok){
                     resultContainer.innerHTML = `
-                    <p>Success! Your short url is ready</p? 
+                        <p>Success! Your short url is ready</p? 
                         <a href = "${data.short_url}" target = "_blank">${data.short_url}</a>
-                        `;
+                    `;
                 } else {
                     resultContainer.innerHTML = `<p style = "colour : red;">Error: ${data.error}</p>`;
                     } 
                 }
-                catch (error) { 
+            catch (error) { 
                     resultContainer.innerHTML = `<p style = "colour: red;">An unexpected error occured. Please try again.</p>`;
                     console.error('Fetch error: ', error);
                 }

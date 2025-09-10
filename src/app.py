@@ -1,12 +1,17 @@
+import os
 from flask import Flask, request, jsonify
 from flask import redirect, abort, render_template
 from flask_sqlalchemy import SQLAlchemy
 import datetime
+from dotenv import load_dotenv
 from utilis import generate_short_code
+
+load_dotenv
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///urls.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI', 'sqlite:///urls.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 

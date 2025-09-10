@@ -38,6 +38,7 @@ def shorten_url():
         return jsonify({'error' : 'The "long_url" field is required'}), 400
     
     custom_alias = data.get('custom_alias')
+    short_code = None
 
     if custom_alias:
         if ' ' in custom_alias:
@@ -46,9 +47,20 @@ def shorten_url():
             return jsonify({'error' : 'Custom alias can only contains numbers and alphabets'}), 400
         if not (4 <= len(custom_alias) <= 30):
             return jsonify({'error' : 'Custom alias must only be between 4 and 30 character length'}), 400
+        
+        existing_alias = URLMap.query.filter_by(short_code=custom_alias).first()
+        if existing_alias:
+            return jsonify({'error' : 'Custom alias is already in use. Please choose another one. '}), 409
+        
+        short_code = custom_alias
 
-
-    short_code = generate_short_code()
+    else:
+        while True:
+            generated_code = generate_short_code()
+            existing_code = URLMap.query.find_by(short_code=generated_code).first()
+            if not existing_code:
+                short_code = generated_code
+                break
 
     while URLMap.query.filter_by(short_code=short_code).first():
         short_code = generate_short_code()

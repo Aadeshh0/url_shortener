@@ -10,3 +10,5 @@ wheels/
 .venv
 
 uv.lock
+
+vector_shift requirements copy.txt
